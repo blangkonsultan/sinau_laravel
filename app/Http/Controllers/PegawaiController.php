@@ -7,6 +7,7 @@ use App\Models\Unit;
 use App\Models\Jabatan;
 use App\Models\pegawai;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PegawaiController extends Controller
 {
@@ -17,7 +18,9 @@ class PegawaiController extends Controller
      */
     public function index()
     {
-        return view('pages.pegawai.index');
+        return view('pages.pegawai.index', [
+            'pegawai' => Pegawai::With('unit', 'jabatan')->orderBy('id')->get()
+        ]);
     }
 
     /**
@@ -45,12 +48,26 @@ class PegawaiController extends Controller
         $nip = (new NipGenerator())->generate([
             'dob' => $request->dob
         ]);
+        $formrequest = $request->merge([
+            'nip'=>$nip
+        ])->all();
 
+        $validator = Validator::make($formrequest, [
+            'nip' => 'required|unique:pegawai,nip',
+            'nik' => 'required|unique:pegawai,nik|min:16|max:16',
+            'nama' => 'required|string',
+            'alamat' => 'required|string',
+            'dob' => 'required|date',
+            'gender' => 'required|int',
+            'jabatan_id' => 'required|exists:jabatan,id',
+            'unit_id' => 'required|exists:unit,id',
+        ])->validate();
+        // dd($validator);
+        Pegawai::create($validator);
 
-        $created = Pegawai::create($request->merge([
-            'nip' => $nip
-        ])->all());
-
+        return redirect()
+            ->route('pegawai.index')
+            ->with('Success', 'Berhasil Input Pegawai');
     }
 
     /**
@@ -70,9 +87,14 @@ class PegawaiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Pegawai $pegawai)
     {
-        //
+
+        return view('pages.pegawai.edit', [
+            'jabatan'=> Jabatan::get(),
+            'unit'=> Unit::get(),
+            'pegawai'=> $pegawai,
+        ]);
     }
 
     /**
@@ -82,9 +104,24 @@ class PegawaiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Pegawai $pegawai)
     {
-        //
+        $validate = Validator::make($request->all(), [
+            'nip' => 'required|unique:pegawai,nip,'.$pegawai->id,
+            'nik' => 'required|min:16|max:16|unique:pegawai,nik,'.$pegawai->id,
+            'nama' => 'required|string',
+            'alamat' => 'required|string',
+            'dob' => 'required|date',
+            'gender' => 'required|int',
+            'jabatan_id' => 'required|exists:jabatan,id',
+            'unit_id' => 'required|exists:unit,id',
+        ])->validate();
+        // dd($validator);
+        $pegawai->update($validate);
+
+        return redirect()
+            ->route('pegawai.index')
+            ->with('Success', 'Berhasil Mengubah Data Pegawai');
     }
 
     /**
@@ -93,8 +130,12 @@ class PegawaiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Pegawai $pegawai)
     {
-        //
+        $pegawai->delete();
+
+        return redirect()
+        ->route('pegawai.index')
+        ->with('Success', 'Berhasil Menghapus Data Pegawai');
     }
 }

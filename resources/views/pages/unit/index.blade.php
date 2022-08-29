@@ -17,9 +17,9 @@
                     </div>
                     <br>
                     <div class="overflow-x-auto relative">
-                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <table class="w-full text-sm text-left text-gray-500 ">
                             <thead
-                                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
                                     <th scope="col" class="py-3 px-6">
                                         NO
@@ -33,7 +33,7 @@
                                 </tr>
                                 <tbody>
                                     @foreach ($units as $key => $unit )
-                                        <tr class="bg-white dark:bg-gray-800">
+                                        <tr class="bg-white ">
                                             <td class="py-4 px-6">{{ $key+1 }}</td>
                                             <td class="py-4 px-6">{{ $unit->nama_unit }}</td>
                                             <td class="py-4 px-6"><a href="#">Edit</a>

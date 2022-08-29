@@ -50,6 +50,12 @@ Route::middleware(['auth'])->group(function () {
         ->name('create');
         Route::post('/pegawai/store', [\App\Http\Controllers\PegawaiController::class, 'store'])
         ->name('store');
+        Route::get('/pegawai/{pegawai}', [\App\Http\Controllers\PegawaiController::class, 'edit'])
+        ->name('edit');
+        Route::put('/pegawai/{pegawai}', [\App\Http\Controllers\PegawaiController::class, 'update'])
+        ->name('update');
+        Route::delete('/pegawai/{pegawai}', [\App\Http\Controllers\PegawaiController::class, 'destroy'])
+        ->name('destroy');
     });
 
     Route::get('/jabatan', [\App\Http\Controllers\JabatanController::class, 'index'])
